@@ -10,11 +10,11 @@ axios(url).then(res => {
    const html = res.data;
    const $ = cheerio.load(html);
    const results = [];
-   $('.articleDetail__lead mostRecentCard__lead ', html).each(() =>{
-       const title = $(this).text();
+   $('.articleDetail__lead', html).each(function (){
+       const story = $(this).text();
        const url = $(this).find('a').attr('href');
        results.push({
-           title,
+           story,
            url
        })
    })
