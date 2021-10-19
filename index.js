@@ -3,6 +3,12 @@ const cheerio = require('cheerio')
 const axios = require('axios')
 const PATH = 8080;
 
+
+const app = express();
+app.listen(PATH, () =>
+    console.log('listening on port 8080')
+)
+
 const results = [];
 console.log(results)
 
@@ -30,30 +36,10 @@ const urlSource = [
 
 ]
 
-
-const useUrlSource = function(sources){
-    return sources.map(source => source.link)
-}
-
-// console.log(useUrlSource(urlSource))
-
-
-
-const app = express();
-app.listen(PATH, () =>
-    console.log('listening on port 8080')
-)
-//renamed to main instead of url
-const main = 'https://canadianvestor.com/?cat=8'
-app.get('/', (req, res) => {
-
-})
-
-app.get('/finance', (req, res) => {
-    axios(main).then(resAxios => {
-        const html = resAxios.data;
-        const $ = cheerio.load(html);
-        //may use a:contains("keyword")
+urlSource.forEach(source =>{
+    axios.get(source.link).then(res => {
+        const html = res.data
+        const $ = cheerio.load(html)
         $('a:contains("the")', html).each(function (){
             const headline = $(this).text()
             const url = $(this).attr("href")
@@ -61,10 +47,19 @@ app.get('/finance', (req, res) => {
                 headline,
                 url
             })
-            console.log(url)
-            console.log(headline)
         })
-        res.json(results)
-    }).catch(err => console.log(err));
+    }).catch(err => console.log(err))
 })
+
+
+
+app.get('/', (req, res) => {
+
+})
+
+app.get('/finance', (req, res) => {
+    res.json(results)
+})
+
+
 
